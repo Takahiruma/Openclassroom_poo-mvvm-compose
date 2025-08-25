@@ -1,119 +1,100 @@
 package com.openclassrooms.notes
 
+import AddNoteScreen
+import NoteViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.openclassrooms.notes.repository.NotesRepository
+import com.openclassrooms.notes.screens.NotesScreen
 import com.openclassrooms.notes.ui.theme.NotesTheme
 
 /**
  * The main activity for the app.
  */
 class MainActivity : ComponentActivity() {
-
     private val notesRepository = NotesRepository()
+    private val viewModel: NoteViewModel by viewModels {
+        NoteViewModelFactory(notesRepository)
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             NotesTheme {
+                val navController = rememberNavController()
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         TopAppBar(
-                            title = {
-                                Text(stringResource(id = R.string.app_name))
-                            }
+                            title = { Text(stringResource(id = R.string.app_name)) }
                         )
                     },
-                ) {
-                    Notes(
-                        modifier = Modifier.padding(it),
-                        notesRepository = notesRepository
-                    )
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = { navController.navigate("AddNoteScreen") }
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Ajouter une note")
+                        }
+                    }
+                ) { paddingValues ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = "NotesScreen",
+                        modifier = Modifier.padding(paddingValues)
+                    ) {
+                        composable("NotesScreen") {
+                            NotesScreen(
+                                modifier = Modifier,
+                                viewModel = viewModel
+                            )
+                        }
+                        composable("AddNoteScreen") {
+                            AddNoteScreen(
+                                onSaveNote = { title, body ->
+                                    viewModel.addNote(title, body)
+                                    navController.popBackStack()
+                                },
+                                onBack = {
+                                    navController.popBackStack()
+                                },
+                                modifier = Modifier
+                            )
+                        }
+                    }
                 }
             }
         }
     }
-
 }
 
-@Composable
-private fun Notes(
-    modifier: Modifier = Modifier,
-    notesRepository: NotesRepository
-) {
-    val notes by notesRepository.notes.collectAsStateWithLifecycle(emptyList())
-
-    LazyVerticalStaggeredGrid(
-        modifier = modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(LocalContext.current.resources.getInteger(R.integer.span_count)),
-        contentPadding = PaddingValues(16.dp),
-        verticalItemSpacing = 16.dp,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        content = {
-            items(
-                items = notes,
-            ) {
-                NoteItem(it)
-            }
+// Factory pour le ViewModel
+class NoteViewModelFactory(private val repository: NotesRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return NoteViewModel(repository) as T
         }
-    )
-}
-
-@Composable
-private fun NoteItem(note: Pair<String, String>) {
-    ElevatedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        shape = RoundedCornerShape(10.dp)
-    ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text(
-                text = note.first,
-                style = MaterialTheme.typography.headlineLarge
-            )
-            Text(
-                modifier = Modifier.padding(top = 8.dp),
-                text = note.second,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
-@Preview(showBackground = true)
-@Composable
-private fun NoteItemPreview() {
-    NotesTheme(dynamicColor = false) {
-        NoteItem(note = Pair("Title", "Super loooooong description with a lot of words!"))
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
 

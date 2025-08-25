@@ -41,17 +41,30 @@ android {
     }
 }
 
+val lifecycle_version = "2.8.0"
+val compose_bom_version = "2023.10.01"
+val activity_compose_version = "1.8.2"
+val navigation_version = "2.7.7"
+
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2024.02.00"))
+    implementation(platform("androidx.compose:compose-bom:${compose_bom_version}"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
 
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation("androidx.activity:activity-compose:${activity_compose_version}")
+
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:${lifecycle_version}")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${lifecycle_version}")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${lifecycle_version}")
+
+    implementation("androidx.navigation:navigation-compose:${navigation_version}")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
