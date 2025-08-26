@@ -24,8 +24,7 @@ class NotesRepositoryTest {
     fun `notes flow should emit correct list`() = runTest {
         // Given
         val expectedNotes = listOf(Note(title = "Note 1", body = "Body 1"))
-        fakeApiService.setNotes(expectedNotes)
-
+        repository.setNotes(expectedNotes)
 
         // Then
         assertEquals(expectedNotes, repository.notes.first())
