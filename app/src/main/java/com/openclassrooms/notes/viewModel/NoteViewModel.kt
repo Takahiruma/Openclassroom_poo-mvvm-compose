@@ -10,15 +10,10 @@ class NoteViewModel(private val notesRepository: NotesRepository) : ViewModel() 
 
     fun addNote(title: String, body: String) {
         viewModelScope.launch {
-            val newId = notes.value.maxOfOrNull { it.id }?.plus(1) ?: 1
-            val newNote = Note(title = title, body = body, id = newId)
+            val newNote = Note(title = title, body = body)
             notesRepository.addNote(newNote)
         }
     }
 
-    fun deleteNote(id: Int) {
-        viewModelScope.launch {
-            notesRepository.deleteNoteById(id)
-        }
-    }
+
 }

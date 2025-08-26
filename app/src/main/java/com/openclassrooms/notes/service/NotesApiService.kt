@@ -18,10 +18,4 @@ interface NotesApiService {
      * @return the list of notes
      */
     fun getAllNotes(): List<Note>
-
-    /**
-     * Deletes a note by its ID
-     * @param id The ID of the note to delete
-     */
-    fun deleteNoteById(id: Int)
 }

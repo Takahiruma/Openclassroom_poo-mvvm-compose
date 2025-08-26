@@ -30,12 +30,10 @@ fun NotesScreen(
         verticalItemSpacing = 16.dp,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        items(notes,
-            key = { note -> note.id }
+        items(notes
         ) { note ->
             NoteItem(
-                note = note,
-                onDelete = { viewModel.deleteNote(note.id) }
+                note = note
             )
         }
     }

@@ -22,7 +22,6 @@ import com.openclassrooms.notes.ui.theme.NotesTheme
 @Composable
 fun NoteItem(
     note: Note,
-    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -41,12 +40,6 @@ fun NoteItem(
                 text = note.body,
                 style = MaterialTheme.typography.bodyMedium
             )
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Supprimer"
-                )
-            }
         }
     }
 }
@@ -56,8 +49,7 @@ fun NoteItem(
 fun NoteItemPreview() {
     NotesTheme(dynamicColor = false) {
         NoteItem(
-            note = Note(title = "Titre", body = "Description très longue..."),
-            onDelete = {}
+            note = Note(title = "Titre", body = "Description très longue...")
         )
     }
 }

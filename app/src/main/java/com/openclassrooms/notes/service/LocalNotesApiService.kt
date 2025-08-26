@@ -10,17 +10,11 @@ import com.openclassrooms.notes.data.NoteData
 class LocalNotesApiService : NotesApiService {
 
     override fun addNote(note: Note) {
-        Log.d("LocalNotesApiService", "Ajout de la note avec l'ID ${note.id}")
         NoteData.Notes.add(note)
-        Log.d("LocalNotesApiService", "Liste après ajout : ${NoteData.Notes}")
     }
 
     override fun getAllNotes(): List<Note> {
         return NoteData.Notes.toList()
-    }
-
-    override fun deleteNoteById(id: Int) {
-        NoteData.Notes.removeAll { it.id == id }
     }
 
     companion object

@@ -20,22 +20,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.openclassrooms.notes.data.RepositorySingleton
 import com.openclassrooms.notes.repository.NotesRepository
 import com.openclassrooms.notes.screens.NotesScreen
 import com.openclassrooms.notes.ui.theme.NotesTheme
+import com.openclassrooms.notes.viewModel.NoteViewModelFactory
 
 /**
  * The main activity for the app.
  */
 class MainActivity : ComponentActivity() {
-    private val notesRepository = NotesRepository()
-    private val viewModel: NoteViewModel by viewModels {
-        NoteViewModelFactory(notesRepository)
-    }
-
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,12 +61,18 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(paddingValues)
                     ) {
                         composable("NotesScreen") {
+                            val viewModel: NoteViewModel = viewModel(
+                                factory = NoteViewModelFactory(RepositorySingleton.notesRepository)
+                            )
                             NotesScreen(
                                 modifier = Modifier,
                                 viewModel = viewModel
                             )
                         }
                         composable("AddNoteScreen") {
+                            val viewModel: NoteViewModel = viewModel(
+                                factory = NoteViewModelFactory(RepositorySingleton.notesRepository)
+                            )
                             AddNoteScreen(
                                 onSaveNote = { title, body ->
                                     viewModel.addNote(title, body)
@@ -84,17 +88,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-// Factory pour le ViewModel
-class NoteViewModelFactory(private val repository: NotesRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return NoteViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
 
