@@ -36,6 +36,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             NotesTheme {
                 val navController = rememberNavController()
+                val viewModel: NoteViewModel = viewModel(
+                    factory = NoteViewModelFactory(RepositorySingleton.notesRepository)
+                )
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
@@ -57,18 +60,12 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(paddingValues)
                     ) {
                         composable("NotesScreen") {
-                            val viewModel: NoteViewModel = viewModel(
-                                factory = NoteViewModelFactory(RepositorySingleton.notesRepository)
-                            )
                             NotesScreen(
                                 modifier = Modifier,
                                 viewModel = viewModel
                             )
                         }
                         composable("AddNoteScreen") {
-                            val viewModel: NoteViewModel = viewModel(
-                                factory = NoteViewModelFactory(RepositorySingleton.notesRepository)
-                            )
                             AddNoteScreen(
                                 onSaveNote = { title, body ->
                                     viewModel.addNote(title, body)
