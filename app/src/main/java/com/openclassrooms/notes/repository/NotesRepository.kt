@@ -1,6 +1,5 @@
 package com.openclassrooms.notes.repository
 
-import android.util.Log
 import com.openclassrooms.notes.data.Note
 import com.openclassrooms.notes.service.LocalNotesApiService
 import com.openclassrooms.notes.service.NotesApiService
